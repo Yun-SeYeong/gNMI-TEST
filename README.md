@@ -4,9 +4,9 @@
 
 
 
-### gNMI란?
+### gNMI란?
 
-- Configuration을 다루고, state를 읽어올 수 있는 프로토콜
+- Configuration을 다루고, state를 읽어올 수 있는 프로토콜
   - gNMI를 통에 데이터를 다룰때 name들과 map<stirng,string> 로 구성된 path를 구성할 수 있어야한다.
   - 꼭 YANG-model일 필요는 없다.
 - gRPC를 바탕으로 개발되었다. google에 의해 개발된 오프소스이고 CNCF에서 관리하고 있다.
