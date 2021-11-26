@@ -1,4 +1,5 @@
 plugins {
+    id 'com.google.protobuf' version '0.8.17'
     id 'java'
 }
 
@@ -10,10 +11,34 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'io.grpc:grpc-netty-shaded:1.41.0'
+    implementation 'io.grpc:grpc-protobuf:1.41.0'
+    implementation 'io.grpc:grpc-stub:1.41.0'
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+
+    implementation 'com.google.protobuf:protobuf-java'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
 
 test {
     useJUnitPlatform()
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.17.3"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.41.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
 }
