@@ -1,5 +1,6 @@
 package com.demo;
 
+import com.demo.util.PathConverter;
 import gnmi.proto.GetRequest;
 import gnmi.proto.GetResponse;
 import gnmi.proto.Path;
@@ -13,9 +14,11 @@ import io.grpc.stub.MetadataUtils;
 
 public class main {
     public static void main(String[] args) {
-        String host = "192.168.100.162:5901";
+        String host = "192.168.100.180:5901";
         String username = "admin";
         String password = "admin";
+        GetRequest getRequest;
+        String xPath = "";
 
         if (args.length > 0 && !args[0].equals("")){
             host = args[0];
@@ -29,22 +32,29 @@ public class main {
             password = args[2];
         }
 
-        GetRequest getRequest = GetRequest.newBuilder()
-                .addPath(Path.newBuilder()
-                        .setOrigin("openconfig")
-                        .addElem(
-                                PathElem.newBuilder()
-                                        .setName("interfaces")
-                                        .build()
-                        )
-                        .addElem(
-                                PathElem.newBuilder()
-                                        .setName("interface")
-                                        .putKey("name", "Ethernet2")
-                                        .build()
-                        )
-                        .build())
-                .build();
+        if (args.length > 3 && !args[3].equals("")){
+          xPath = args[3];
+          getRequest = GetRequest.newBuilder()
+              .addPath(PathConverter.xPath2Path(xPath))
+              .build();
+        } else {
+          getRequest = GetRequest.newBuilder()
+              .addPath(Path.newBuilder()
+                  .setOrigin("openconfig")
+                  .addElem(
+                      PathElem.newBuilder()
+                          .setName("interfaces")
+                          .build()
+                  )
+                  .addElem(
+                      PathElem.newBuilder()
+                          .setName("interface")
+                          .putKey("name", "Ethernet2")
+                          .build()
+                  )
+                  .build())
+              .build();
+        }
 
       System.out.println("getRequest = " + getRequest);
 

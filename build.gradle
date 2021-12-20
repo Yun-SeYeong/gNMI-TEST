@@ -8,10 +8,11 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    google()
 }
 
 dependencies {
-//    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'io.grpc:grpc-netty-shaded:1.41.0'
     implementation 'io.grpc:grpc-protobuf:1.41.0'
     implementation 'io.grpc:grpc-stub:1.41.0'
@@ -29,6 +30,9 @@ test {
 
 
 jar {
+    archiveBaseName = 'gNMI-Test-Client'
+    archiveVersion = '1.1.0'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes 'Main-Class': 'com.demo.main'
     }
@@ -39,9 +43,16 @@ jar {
     }
 }
 
-def sourceDir = "$buildDir/generated/source"
+def sourceDir = "$buildDir"
 sourceSets {
-    main.java.srcDir sourceDir
+    main {
+        java {
+            srcDirs = [
+                    "$projectDir/src/main/java",
+                    sourceDir
+            ]
+        }
+    }
 }
 
 protobuf {
