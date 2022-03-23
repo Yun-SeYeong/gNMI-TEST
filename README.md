@@ -1,24 +1,16 @@
 # gNMI
 
-
-
 ### gRPC Network Management Interface (gNMI)
 
 > gRPC기반에 디바이스의 설정을 수정 또는 조회할수 있는 프로토콜로 원격으로 디바이스를 제어하고 스트림으로 데이터를 받아올수 있다. 하나의 gRPC service 정의로 제어와 조회를 모두 가능하게 되어있다. (하나의 NMS로 디바이스의 정보를 조회 또는 설정을 할 수 있다.)
 
-
-
 모든 메시지는 gRPC service에 정의되고 protocol buffer로 사용된다. gRPC service는 protobuf IDL로 기능을 표현된 내용을 통해 정의된다. 
-
-
 
 - 용어
   - Telementry - device에 근본적이 문자 데이터들을 streaming 한다. (either operational state or configuration)
   - Configuration - 읽고 쓰는 데이터형태이고 client에 의해 조작된다.
   - Target - 데이터가 조작되거나 report되는 디바이스이다. 보통 network device이다.
   - Client - target을 query/modify 하기위해 표현된 protocol 데이터를 사용하는 device 혹은 system, data를 스트리밍하여 collector로 사용되기도 한다. 보통은 network management system이다.
-
-
 
 ### gNMI란?
 
@@ -28,10 +20,6 @@
 - gRPC를 바탕으로 개발되었다. google에 의해 개발된 오프소스이고 CNCF에서 관리하고 있다.
   - RPC는 HTTP/2로 만들어져있다.
   - 서버 스트리밍, 클라이언트 스트리밍, 양방향 스트리밍
-
-
-
-
 
 ### gNMI를 사용하는 이유
 
@@ -49,10 +37,6 @@
     - Hardware/Software
     - Environmental/Power
 
-
-
-
-
 ### gNMI 구성
 
 > gRPC, gNMI, Tree-structured data 로 구성된다.
@@ -63,10 +47,6 @@
   - Get/Set/Subscribe/Capabilities (proto 파일을 통해 서비스를 정의한다)
 - Tree-structured data - properties
   - OpenConfig - YANG data models
-
-
-
-
 
 ### gNMI - 서비스 정의
 
@@ -85,13 +65,8 @@ service gNMI {
 - Target always authenticates Client
 - Client always authenticates Target
 - Session is always encrypted
-
-
-
-
-
 1. gNMI SET - (delete, replace & update)
-
+   
    ```protobuf
    message SetRequest {
     <...>
@@ -100,31 +75,32 @@ service gNMI {
     repeated Update update = 4;
    }
    ```
-
+   
    - SET은 Transactional 하다. (중간에 다른 트랜젝션이 끼어들 수 없다.)
    - Steate는 설정전체가 accepted 되지 않으면 바뀌지 않는다.
 
-
-
 2. Subscribe - (streaming telemetry)
-
+   
    ```protobuf
    service gNMI {
     <...>
     rpc Subscribe(stream SubscribeRequest) returns (stream SubscribeResponse);
    }
    ```
-
-   - path에 subscribe를 하여 사용한다.
-   - subscription modes
-     - STREAM - 같이 바뀌는걸 전송한다.
-     - ONCE - 하나의 값을 전송하고 channel을 닫는다.
-     - POLL - actively polls for the value
-
-
+   
+   - The SubscribeRequest Message
+     
+     `SubscribeRequest` 메시지는 path들을 통해 구성되어있고, target으로 부터 update 요청이 오게된다.
+     
+     다음은 내부 SubscribeRequest의 내부 필드이다.
+     - `subscribe`: 타입은 `SubscriptionList`로 클라이언트가 subscribe할 path들을 의미한다.
+     
+     - `poll`: 타입은 `SubscriptionList`로 클라이언트가 poll 방식으로 subscribe할 path들을 의미한다.
+     
+     - `aliases`: 클라이언트는 path에 대한 alias를 정의 할 수 있다.
 
 3. Capabilities
-
+   
    ```
    service gNMI {
     rpc Capabilities(CapabilityRequest) returns (CapabilityResponse);
@@ -137,10 +113,6 @@ service gNMI {
     string gNMI_version = 3; // Supported gNMI version.
    }
    ```
-
-
-
-
 
 ### Encoding
 
@@ -156,10 +128,6 @@ enum Encoding {
 }
 ```
 
-
-
-
-
 ### Certificates
 
 > gNMI를 통한 session은 인증된 상태이다.
@@ -168,37 +136,7 @@ enum Encoding {
 - 클라이언트는 Target에 인증해야 한다.
 - Target도 Client를 인증해야된다.
 
-
-
 ![스크린샷 2021-11-02 오후 1.36.47](doc/img1.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 참고
 
